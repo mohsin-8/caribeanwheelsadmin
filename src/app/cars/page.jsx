@@ -37,7 +37,7 @@ export default function CarsPage() {
                 params: {
                     ...cleanFilters,
                     page: targetPage,
-                    limit: 6,
+                    limit: ITEMS_PER_PAGE,
                 },
             });
 
@@ -47,14 +47,17 @@ export default function CarsPage() {
                 setCars(data.cars);
             }
 
-            setPage(data.page);
-            setHasMore(data.page < data.pages);
+            setPage(targetPage);
+
+            // 🔥 FIX HERE
+            setHasMore(data.cars.length === ITEMS_PER_PAGE);
         } catch (error) {
             console.error("Failed to load cars", error);
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         loadCars(1, false);
