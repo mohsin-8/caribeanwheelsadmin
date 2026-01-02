@@ -1,8 +1,10 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // do NOT use output: 'export' for App Router
-}
+  experimental: {
+    // optional, only if you need Turbopack or other features
+    serverActions: true,
+  },
+};
 
-export default nextConfig
+export default nextConfig;
