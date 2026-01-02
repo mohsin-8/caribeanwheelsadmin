@@ -111,7 +111,7 @@ const ResetPassword = () => {
                                     </span>
                                 </div>
                                 <div className="col-lg-12 mb-3">
-                                    <Link href={"/login"} style={{ color: "#960f16", textDecoration: "none" }}>Go back Sign In?</Link>
+                                    <Link href={"/"} style={{ color: "#960f16", textDecoration: "none" }}>Go back Sign In?</Link>
                                 </div>
                                 <div className="col-lg-12">
                                     <button type='submit'>Reset Password</button>
