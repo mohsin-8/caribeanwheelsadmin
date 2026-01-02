@@ -9,9 +9,8 @@ import Layout from "@/components/Layout";
 export default function CarsPage() {
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(false);
-
     const [page, setPage] = useState(1);
-    const [pages, setPages] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
     const [filters, setFilters] = useState({
         make: "",
@@ -24,36 +23,52 @@ export default function CarsPage() {
         sortBy: "",
     });
 
-    const loadCars = async (targetPage = page) => {
+    const ITEMS_PER_PAGE = 6; // <-- Show 6 items per page
+
+    const loadCars = async (targetPage = 1, append = false) => {
         try {
             setLoading(true);
 
+            const cleanFilters = Object.fromEntries(
+                Object.entries(filters).filter(([_, v]) => v !== "")
+            );
+
             const { data } = await carApi.get("/", {
                 params: {
-                    ...filters,
+                    ...cleanFilters,
                     page: targetPage,
+                    limit: 6,
                 },
             });
 
-            setCars(data.cars || []);
-            setPage(data.page || 1);
-            setPages(data.pages || 1);
+            if (append) {
+                setCars((prev) => [...prev, ...data.cars]);
+            } else {
+                setCars(data.cars);
+            }
+
+            setPage(data.page);
+            setHasMore(data.page < data.pages);
         } catch (error) {
             console.error("Failed to load cars", error);
-            setCars([]);
-            setPages(1);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        loadCars(page);
-    }, [page]);
+        loadCars(1, false);
+    }, []);
+
+    const loadMore = () => {
+        if (!loading && hasMore) {
+            loadCars(page + 1, true);
+        }
+    };
 
     const applyFilters = () => {
         setPage(1);
-        loadCars(1);
+        loadCars(1, false);
     };
 
     const handleDelete = async (carId, carTitle) => {
@@ -81,7 +96,7 @@ export default function CarsPage() {
     return (
         <Layout>
             <div className="container-fluid py-4">
-
+                {/* Filters Section */}
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                     <h3 className="fw-bold text-secondary mb-0">Car Management</h3>
                     <Link href="/cars/add-car" className="btn btn-primary">
@@ -89,6 +104,7 @@ export default function CarsPage() {
                     </Link>
                 </div>
 
+                {/* Filter Inputs */}
                 <div className="card admin-card mb-4 p-3">
                     <div className="row g-3">
                         <div className="col-md-2">
@@ -101,7 +117,6 @@ export default function CarsPage() {
                                 }
                             />
                         </div>
-
                         <div className="col-md-2">
                             <input
                                 className="form-control"
@@ -112,7 +127,6 @@ export default function CarsPage() {
                                 }
                             />
                         </div>
-
                         <div className="col-md-2">
                             <input
                                 className="form-control"
@@ -123,7 +137,6 @@ export default function CarsPage() {
                                 }
                             />
                         </div>
-
                         <div className="col-md-2">
                             <select
                                 className="form-select"
@@ -137,7 +150,6 @@ export default function CarsPage() {
                                 <option value="used">Used</option>
                             </select>
                         </div>
-
                         <div className="col-md-2">
                             <input
                                 type="number"
@@ -149,7 +161,6 @@ export default function CarsPage() {
                                 }
                             />
                         </div>
-
                         <div className="col-md-2">
                             <input
                                 type="number"
@@ -161,7 +172,6 @@ export default function CarsPage() {
                                 }
                             />
                         </div>
-
                         <div className="col-md-3">
                             <select
                                 className="form-select"
@@ -176,7 +186,6 @@ export default function CarsPage() {
                                 <option value="year_desc">Year ↓</option>
                             </select>
                         </div>
-
                         <div className="col-md-3">
                             <button
                                 onClick={applyFilters}
@@ -188,20 +197,14 @@ export default function CarsPage() {
                     </div>
                 </div>
 
+                {/* Cars Table */}
                 <div className="card admin-card p-3">
-
                     {loading ? (
-                        <div className="text-center py-5 fw-semibold">
-                            Loading cars...
-                        </div>
+                        <div className="text-center py-5 fw-semibold">Loading cars...</div>
                     ) : cars.length === 0 ? (
                         <div className="text-center py-5">
-                            <h5 className="text-secondary fw-semibold">
-                                No cars available
-                            </h5>
-                            <p className="text-muted mb-0">
-                                Try adjusting filters or add a new car.
-                            </p>
+                            <h5 className="text-secondary fw-semibold">No cars available</h5>
+                            <p className="text-muted mb-0">Try adjusting filters or add a new car.</p>
                         </div>
                     ) : (
                         <>
@@ -234,22 +237,17 @@ export default function CarsPage() {
                                                 <td data-label="Title">{car.title}</td>
                                                 <td data-label="Make">{car.make}</td>
                                                 <td data-label="Year">{car.year}</td>
-                                                <td data-label="Price">
-                                                    ${car.regularPrice}
-                                                </td>
-
-                                                <td
-                                                    data-label="Actions"
-                                                    className="text-end"
-                                                >
-                                                    {car.vinReport && <Link
-                                                        href={car.vinReport.url}
-                                                        target="_blank"
-                                                        className="btn btn-sm btn-outline-primary me-2"
-                                                    >
-                                                        View vin report
-                                                    </Link>}
-
+                                                <td data-label="Price">${car.regularPrice}</td>
+                                                <td data-label="Actions" className="text-end">
+                                                    {car.vinReport && (
+                                                        <Link
+                                                            href={car.vinReport.url}
+                                                            target="_blank"
+                                                            className="btn btn-sm btn-outline-primary me-2"
+                                                        >
+                                                            View vin report
+                                                        </Link>
+                                                    )}
                                                     <Link
                                                         href={`/cars/${car._id}/edit`}
                                                         className="btn btn-sm btn-secondary"
@@ -268,46 +266,18 @@ export default function CarsPage() {
                                     </tbody>
                                 </table>
                             </div>
-
-                            {/* PAGINATION */}
-                            <nav className="mt-4">
-                                <ul className="pagination justify-content-end mb-0">
-                                    <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                                        <button
-                                            className="page-link"
-                                            onClick={() => setPage(page - 1)}
-                                        >
-                                            Previous
-                                        </button>
-                                    </li>
-
-                                    {[...Array(pages)].map((_, i) => (
-                                        <li
-                                            key={i}
-                                            className={`page-item ${page === i + 1 ? "active" : ""}`}
-                                        >
-                                            <button
-                                                className="page-link"
-                                                onClick={() => setPage(i + 1)}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-
-                                    <li
-                                        className={`page-item ${page === pages ? "disabled" : ""
-                                            }`}
+                            {hasMore && (
+                                <div className="text-center mt-4">
+                                    <button
+                                        className="btn btn-outline-primary px-4"
+                                        onClick={loadMore}
+                                        disabled={loading}
                                     >
-                                        <button
-                                            className="page-link"
-                                            onClick={() => setPage(page + 1)}
-                                        >
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
+                                        {loading ? "Loading..." : "Load More"}
+                                    </button>
+                                </div>
+                            )}
+
                         </>
                     )}
                 </div>
