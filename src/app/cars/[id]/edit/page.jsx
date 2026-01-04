@@ -23,7 +23,7 @@ const ALLOWED_FIELDS = [
   "regularPrice",
   "salePrice",
   "priceLabel",
-  "vinNumber",
+  // "vinNumber",
   "stockNumber",
   "mileage",
   "color",
