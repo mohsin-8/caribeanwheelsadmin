@@ -219,7 +219,7 @@ export default function CarsPage() {
                                             <th>Title</th>
                                             <th>Make</th>
                                             <th>Year</th>
-                                            <th>Price</th>
+                                            <th>Price ($FOB)</th>
                                             <th className="text-end">Actions</th>
                                         </tr>
                                     </thead>
