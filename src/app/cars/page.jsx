@@ -88,7 +88,12 @@ export default function CarsPage() {
 
         try {
             await carApi.delete(`/${carId}`);
-            setCars(cars.filter((car) => car._id !== carId));
+
+            // safest state update
+            setCars((prevCars) =>
+                prevCars.filter((car) => car._id !== carId)
+            );
+
             Swal.fire("Deleted!", `"${carTitle}" has been deleted.`, "success");
         } catch (error) {
             console.error("Failed to delete car", error);
