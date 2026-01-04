@@ -33,12 +33,18 @@ export default function CarsPage() {
                 Object.entries(filters).filter(([_, v]) => v !== "")
             );
 
+            // const { data } = await carApi.get("/", {
+            //     params: {
+            //         ...cleanFilters,
+            //         page: targetPage,
+            //         limit: ITEMS_PER_PAGE,
+            //     },
+            // });
             const { data } = await carApi.get("/", {
                 params: {
-                    ...cleanFilters,
-                    page: targetPage,
-                    limit: ITEMS_PER_PAGE,
-                },
+                    page,
+                    limit: ITEMS_PER_PAGE
+                }
             });
 
             if (append) {
