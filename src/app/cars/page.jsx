@@ -23,7 +23,7 @@ export default function CarsPage() {
         sortBy: "",
     });
 
-    const ITEMS_PER_PAGE = 6; // <-- Show 6 items per page
+    const ITEMS_PER_PAGE = 5; // <-- Show 6 items per page
 
     const loadCars = async (targetPage = 1, append = false) => {
         try {
@@ -33,37 +33,34 @@ export default function CarsPage() {
                 Object.entries(filters).filter(([_, v]) => v !== "")
             );
 
-            // const { data } = await carApi.get("/", {
-            //     params: {
-            //         ...cleanFilters,
-            //         page: targetPage,
-            //         limit: ITEMS_PER_PAGE,
-            //     },
-            // });
             const { data } = await carApi.get("/", {
                 params: {
-                    page,
-                    limit: ITEMS_PER_PAGE
-                }
+                    ...cleanFilters,
+                    page: targetPage,
+                    limit: ITEMS_PER_PAGE,
+                },
             });
 
-            if (append) {
-                setCars((prev) => [...prev, ...data.cars]);
-            } else {
-                setCars(data.cars);
-            }
+            // ✅ YAHAN PASTE KARO (IMPORTANT)
+            setCars(prev => {
+                const merged = append ? [...prev, ...data.cars] : data.cars;
+                const unique = Array.from(
+                    new Map(merged.map(item => [item._id, item])).values()
+                );
+                return unique;
+            });
 
             setPage(targetPage);
 
-            // 🔥 FIX HERE
-            setHasMore(data.cars.length === ITEMS_PER_PAGE);
+            // ✅ hasMore logic
+            setHasMore(targetPage < data.pages);
+
         } catch (error) {
             console.error("Failed to load cars", error);
         } finally {
             setLoading(false);
         }
     };
-
 
     useEffect(() => {
         loadCars(1, false);
@@ -94,11 +91,7 @@ export default function CarsPage() {
 
         try {
             await carApi.delete(`/${carId}`);
-            await loadCars(1, false);
-            // safest state update
-            setCars((prevCars) =>
-                prevCars.filter((car) => car._id !== carId)
-            );
+            setCars(prev => prev.filter(car => car._id !== carId));
 
             Swal.fire("Deleted!", `"${carTitle}" has been deleted.`, "success");
         } catch (error) {
