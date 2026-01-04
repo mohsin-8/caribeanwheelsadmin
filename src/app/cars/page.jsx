@@ -88,7 +88,7 @@ export default function CarsPage() {
 
         try {
             await carApi.delete(`/${carId}`);
-
+            await loadCars(1, false);
             // safest state update
             setCars((prevCars) =>
                 prevCars.filter((car) => car._id !== carId)
