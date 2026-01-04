@@ -267,7 +267,7 @@ export default function EditCarPage() {
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Regular Price</label>
+              <label className="form-label">Regular Price ($FOB)</label>
               <input
                 type="number"
                 name="regularPrice"
