@@ -100,7 +100,7 @@ export default function CarsPage() {
             Swal.fire("Error", "Failed to delete car. Please try again.", "error");
         }
     };
-
+    console.log(cars, "cars data");
     return (
         <Layout>
             <div className="container-fluid py-4">
