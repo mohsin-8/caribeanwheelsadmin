@@ -24,7 +24,10 @@ const Dashboard = () => {
             <Layout>
                 <div className='dashboard-page'>
                     <h1>Go to Cars</h1>
-                    <Link href={"/cars"}>View Cars</Link>
+                    <div className='d-flex gap-3 justify-content-center align-items-center'>
+                        <Link href={"/cars"}>View Cars</Link>
+                        <Link href={"/contact-details"}>Contact Details</Link>
+                    </div>
                 </div>
             </Layout>
         </ProtectedRoute>

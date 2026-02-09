@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchProfile = async () => {
         try {
-            const res = await fetch("https://caribean-wheels-project-backen.vercel.app/api/auth/profile", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`, {
                 method: "GET",
                 credentials: "include", // send cookies
             });
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
     // Login
     const login = async ({ email, password }) => {
-        const res = await fetch("https://caribean-wheels-project-backen.vercel.app/api/auth/login", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
     // Logout
     const logout = async () => {
-        await fetch("https://caribean-wheels-project-backen.vercel.app/api/auth/logout", {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
             method: "POST",
             credentials: "include",
         });

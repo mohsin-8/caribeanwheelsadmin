@@ -5,8 +5,8 @@ import "./login.css";
 import { useRouter } from "next/navigation";
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { FaEye } from "react-icons/fa6";
-import { LuEyeClosed } from "react-icons/lu";
+import { FaEye } from 'react-icons/fa';
+import { LuEyeClosed } from 'react-icons/lu';
 
 const LoginPage = () => {
     const router = useRouter();
